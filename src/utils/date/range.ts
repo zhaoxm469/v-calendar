@@ -119,7 +119,7 @@ export class DateRange {
       if (this.hasRepeat) return 1;
       return Infinity;
     }
-    return this.end.dayIndex - this.start.dayIndex;
+    return this.end.dayIndex - this.start.dayIndex + 1;
   }
 
   startsOnDay(dayParts: DayParts) {
