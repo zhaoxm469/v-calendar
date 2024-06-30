@@ -70,7 +70,7 @@ export class IntervalRule implements Rule<IntervalRuleType> {
   ) {
     // Start date needed for interval rules
     if (!this.from) {
-      console.error(
+      console.warn(
         `A valid "from" date is required for date interval rule. This rule will be skipped.`,
       );
       this.validated = false;
@@ -134,7 +134,7 @@ export class ComponentRule implements Rule<ComponentRuleType> {
     const result: number[] = [];
     components.forEach(component => {
       if (!this.validator(component)) {
-        console.error(
+        console.warn(
           `Component value ${component} in invalid for "${this.type}" rule. This rule will be skipped.`,
         );
         return;
@@ -214,13 +214,13 @@ export class OrdinalComponentRule implements Rule<OrdinalComponentRuleType> {
       if (isNumber(numOrArray)) {
         if (i === 0) return;
         if (!isOrdinalWeekInMonth(config[0])) {
-          console.error(
+          console.warn(
             `Ordinal range for "${this.type}" rule is from -5 to -1 or 1 to 5. This rule will be skipped.`,
           );
           return;
         }
         if (!isDayOfWeek(numOrArray)) {
-          console.error(
+          console.warn(
             `Acceptable range for "${this.type}" rule is from 1 to 5. This rule will be skipped`,
           );
           return;
@@ -239,13 +239,13 @@ export class OrdinalComponentRule implements Rule<OrdinalComponentRuleType> {
       if (isNumber(numOrArray)) {
         if (i === 0) return;
         if (!isOrdinalWeekInMonth(config[0])) {
-          console.error(
+          console.warn(
             `Ordinal range for "${this.type}" rule is from -5 to -1 or 1 to 5. This rule will be skipped.`,
           );
           return;
         }
         if (!isDayOfWeek(numOrArray)) {
-          console.error(
+          console.warn(
             `Acceptable range for "${this.type}" rule is from 1 to 5. This rule will be skipped`,
           );
           return;
@@ -275,7 +275,7 @@ export class FunctionRule implements Rule<FunctionRuleType> {
 
   constructor(public fn: Function) {
     if (!isFunction(fn)) {
-      console.error(
+      console.warn(
         `The function rule requires a valid function. This rule will be skipped.`,
       );
       this.validated = false;
