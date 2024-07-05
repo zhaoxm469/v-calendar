@@ -11,8 +11,6 @@ export { default as isUndefined } from 'lodash/isUndefined';
 export { default as get } from 'lodash/get';
 export { default as set } from 'lodash/set';
 export { default as mapValues } from 'lodash/mapValues';
-export { default as defaults } from 'lodash/defaults';
-export { default as defaultsDeep } from 'lodash/defaultsDeep';
 export { default as map } from 'lodash/map';
 export { default as head } from 'lodash/head';
 export { default as last } from 'lodash/last';
@@ -233,23 +231,34 @@ export function extend<T extends object, E extends object>(
   return new Proxy(value, handler) as T & E;
 }
 
+export function defaults(target: any, ...sources: any[]) {
+  for (let source of sources) {
+    if (source != null) {
+      for (const key in source) {
+        if (target[key] === undefined) {
+          target[key] = source[key];
+        }
+      }
+    }
+  }
+  return target;
+}
+
+export function defaultsDeep(target: any, ...sources: any[]) {
+  for (let source of sources) {
+    if (source != null) {
+      for (const key in source) {
+        if (typeof source[key] === 'object' && target[key]) {
+          defaultsDeep(target[key], source[key]);
+        } else if (target[key] === undefined) {
+          target[key] = source[key];
+        }
+      }
+    }
+  }
+  return target;
+}
+
 export function clamp(num: number, min: number, max: number) {
   return Math.min(Math.max(num, min), max);
 }
-
-/* eslint-disable no-bitwise */
-
-export function hash(str: string): number {
-  let hashcode = 0;
-  let i = 0;
-  let chr;
-  if (str.length === 0) return hashcode;
-  for (i = 0; i < str.length; i++) {
-    chr = str.charCodeAt(i);
-    hashcode = (hashcode << 5) - hashcode + chr;
-    hashcode |= 0; // Convert to 32bit integer
-  }
-  return hashcode;
-}
-
-/* eslint-enable no-bitwise */
