@@ -55,13 +55,19 @@
 
 <script lang="ts">
 import { type PropType, computed, defineComponent } from 'vue';
+import { directive as popoverDirective } from 'v-popover';
 import { useCalendar } from '../../use/calendar';
 import { useSlot } from '../../use/slots';
-import type { Attribute, PopoverConfig } from '../../utils/attribute';
+import type { Attribute, AttributePopoverConfig } from '../../utils/attribute';
 import type { DateRangeCell } from '../../utils/date/range';
-import { arrayHasItems, defaults, get, last } from '../../utils/helpers';
+import {
+  arrayHasItems,
+  cleanPopoverOptions,
+  defaults,
+  get,
+  last,
+} from '../../utils/helpers';
 import type { CalendarDay } from '../../utils/page';
-import { popoverDirective } from '../../utils/popovers';
 import CalendarSlot from './CalendarSlot.vue';
 
 export default defineComponent({
@@ -75,7 +81,8 @@ export default defineComponent({
       locale,
       theme,
       attributeContext,
-      dayPopoverId,
+      dayPopoverName,
+      displayMode,
       onDayClick,
       onDayMouseenter,
       onDayMouseleave,
@@ -101,7 +108,7 @@ export default defineComponent({
 
     function processPopover(
       { data: attribute }: DateRangeCell<Attribute>,
-      { popovers }: { popovers: PopoverConfig[] },
+      { popovers }: { popovers: Partial<AttributePopoverConfig>[] },
     ) {
       const { key, customData, popover } = attribute;
       if (!popover) return;
@@ -113,9 +120,9 @@ export default defineComponent({
         },
         { ...popover },
         {
-          visibility: popover.label ? 'hover' : 'click',
+          action: popover.label ? 'hover' : 'click',
           placement: 'bottom',
-          isInteractive: !popover.label,
+          interactive: !popover.label,
         },
       );
       popovers.splice(0, 0, resolvedPopover);
@@ -143,11 +150,6 @@ export default defineComponent({
 
     const bars = computed(() => glyphs.value.bars);
     const hasBars = computed(() => !!arrayHasItems(bars.value));
-
-    const popovers = computed(() => glyphs.value.popovers);
-    const popoverAttrs = computed(() =>
-      popovers.value.map((p: any) => p.attribute),
-    );
 
     const dayContentSlot = useSlot('day-content');
     const dayClasses = computed(() => {
@@ -210,13 +212,26 @@ export default defineComponent({
     });
 
     const dayPopover = computed(() => {
-      if (!arrayHasItems(popovers.value)) return null;
-      return defaults(
-        {
-          id: dayPopoverId.value,
-          data: { day, attributes: popoverAttrs.value },
-        },
-        ...popovers.value,
+      const popovers = glyphs.value.popovers;
+      if (!arrayHasItems(popovers)) return null;
+      return cleanPopoverOptions(
+        defaults(
+          {
+            name: dayPopoverName.value,
+            data: {
+              day,
+              attributes: popovers.map((p: any) => p.attribute),
+            },
+          },
+          ...popovers,
+          {
+            action: 'hover',
+            interactive: false,
+            arrowHidden: false,
+            transitions: ['fade', 'scale'],
+            theme: displayMode.value,
+          },
+        ),
       );
     });
 
@@ -235,7 +250,6 @@ export default defineComponent({
       highlights,
       hasHighlights,
       locale,
-      popovers,
     };
   },
 });

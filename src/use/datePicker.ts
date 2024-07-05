@@ -11,13 +11,20 @@ import {
   inject,
   provide,
 } from 'vue';
+import {
+  type PopoverOptions,
+  showPopover as sp,
+  hidePopover as hp,
+  togglePopover as tp,
+  getPopoverEventHandlers,
+} from 'v-popover';
 import Calendar from '../components/Calendar/Calendar.vue';
-import Popover from '../components/Popover/Popover.vue';
-import { getDefault } from '../utils/defaults';
+import { DatePickerPopoverOptions, getDefault } from '../utils/defaults';
 import type { AttributeConfig } from '../utils/attribute';
 import { type CalendarDay, getPageAddressForDate } from '../utils/page';
 import {
   defaultsDeep,
+  cleanPopoverOptions,
   isArray,
   isDate,
   isNumber,
@@ -33,13 +40,6 @@ import {
   isDateParts,
 } from '../utils/date/helpers';
 import type { SimpleDateRange } from '../utils/date/range';
-import {
-  type PopoverOptions,
-  showPopover as sp,
-  hidePopover as hp,
-  togglePopover as tp,
-  getPopoverEventHandlers,
-} from '../utils/popovers';
 import { propsDef as basePropsDef, createBase } from './base';
 import type { MoveTarget, MoveOptions } from './calendar';
 import { provideSlots } from './slots';
@@ -113,8 +113,10 @@ export const propsDef = {
     default: () => getDefault('datePicker.inputDebounce'),
   },
   popover: {
-    type: [Boolean, Object] as PropType<boolean | Partial<PopoverOptions>>,
-    default: true,
+    type: [Boolean, Object, null] as PropType<
+      Partial<DatePickerPopoverOptions> | boolean | null
+    >,
+    default: () => getDefault('datePicker.popover'),
   },
   dragAttribute: Object as PropType<AttributeConfig>,
   selectAttribute: Object as PropType<AttributeConfig>,
@@ -132,6 +134,8 @@ export const emits = [
   'popover-did-hide',
 ];
 
+let popoverUid = 0;
+
 export function createDatePicker(
   props: DatePickerProps,
   { emit, slots }: SetupContext<string[]>,
@@ -139,14 +143,13 @@ export function createDatePicker(
   provideSlots(slots, { footer: 'dp-footer' });
 
   const baseCtx = createBase(props);
-  const { locale, masks, disabledAttribute } = baseCtx;
+  const { locale, masks, disabledAttribute, displayMode } = baseCtx;
 
   const showCalendar = ref(false);
-  const datePickerPopoverId = ref(Symbol());
   const dateValue = ref<null | Date | SimpleDateRange>(null);
   const dragValue = ref<null | SimpleDateRange>(null);
   const inputValues = ref<string[]>(['', '']);
-  const popoverRef = ref<InstanceType<typeof Popover> | null>(null);
+  const popoverName = ref(`__date_picker_popover_${popoverUid++}__`);
   const calendarRef = ref<InstanceType<typeof Calendar> | null>(null);
 
   let updateTimeout: undefined | number = undefined;
@@ -219,18 +222,15 @@ export function createDatePicker(
   });
 
   const popover = computed(() => {
-    const target = popoverRef.value?.$el.previousElementSibling ?? undefined;
-    return defaultsDeep({}, props.popover, getDefault('datePicker.popover'), {
-      target,
-    }) as Partial<PopoverOptions>;
+    return cleanPopoverOptions(
+      defaultsDeep(
+        { name: popoverName.value },
+        props.popover,
+        getDefault('datePicker.popover'),
+        { theme: displayMode.value },
+      ),
+    );
   });
-
-  const popoverEvents = computed(() =>
-    getPopoverEventHandlers({
-      ...popover.value,
-      id: datePickerPopoverId.value,
-    }),
-  );
 
   const inputValue = computed(() => {
     return isRange.value
@@ -246,7 +246,7 @@ export function createDatePicker(
       input: onInputInput(target),
       change: onInputChange(target),
       keyup: onInputKeyup,
-      ...(props.popover && popoverEvents.value),
+      ...(props.popover ? getPopoverEventHandlers(popover.value) : {}),
     }));
     return isRange.value
       ? {
@@ -705,10 +705,9 @@ export function createDatePicker(
 
   function showPopover(opts: Partial<PopoverOptions> = {}) {
     sp({
-      ...popover.value,
       ...opts,
-      isInteractive: true,
-      id: datePickerPopoverId.value,
+      interactive: true,
+      name: popoverName.value,
     });
   }
 
@@ -716,18 +715,16 @@ export function createDatePicker(
     hp({
       hideDelay: 10,
       force: true,
-      ...popover.value,
       ...opts,
-      id: datePickerPopoverId.value,
+      name: popoverName.value,
     });
   }
 
   function togglePopover(opts: Partial<PopoverOptions>) {
     tp({
-      ...popover.value,
       ...opts,
-      isInteractive: true,
-      id: datePickerPopoverId.value,
+      interactive: true,
+      name: popoverName.value,
     });
   }
 
@@ -859,9 +856,7 @@ export function createDatePicker(
   const context = {
     ...baseCtx,
     showCalendar,
-    datePickerPopoverId,
-    popoverRef,
-    popoverEvents,
+    popoverName,
     calendarRef,
     isRange,
     isTimeMode,

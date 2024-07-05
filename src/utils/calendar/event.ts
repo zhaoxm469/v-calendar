@@ -1,12 +1,12 @@
 import { addDays } from 'date-fns';
 import { type ComputedRef, computed, reactive, toRefs } from 'vue';
+import type { PopoverOptions } from 'v-popover';
 import type { DragOffset, ResizeOffset } from '../../use/calendarGrid';
 import { MS_PER_MINUTE, roundDate } from '../date/helpers';
 import { DateRange } from '../date/range';
 import { clamp, omit } from '../helpers';
 import Locale from '../locale';
 import type { CalendarDay } from '../page';
-import type { PopoverOptions } from '../popovers';
 
 export interface ResizeOrigin {
   start: Date;

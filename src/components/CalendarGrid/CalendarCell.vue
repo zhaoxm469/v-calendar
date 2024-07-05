@@ -65,11 +65,9 @@
 import { computed, defineComponent } from 'vue';
 import type { Event } from '../../utils/calendar/event';
 import type { DateRangeCell } from '../../utils/date/range';
-import { popoverDirective } from '../../utils/popovers';
 
 export default defineComponent({
   name: 'CalendarCell',
-  directives: { popover: popoverDirective },
 });
 </script>
 

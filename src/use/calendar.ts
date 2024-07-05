@@ -11,6 +11,11 @@ import {
   watch,
   watchEffect,
 } from 'vue';
+import {
+  type PopoverAction,
+  type PopoverOptions,
+  hidePopover,
+} from 'v-popover';
 import { Attribute, type AttributeConfig } from '../utils/attribute';
 import {
   type DateSource,
@@ -23,7 +28,7 @@ import { getDefault } from '../utils/defaults';
 import {
   type CustomElement,
   arrayHasItems,
-  has,
+  displayWarning,
   head,
   isBoolean,
   last,
@@ -43,7 +48,6 @@ import {
   pageIsValid,
   pageRangeToArray,
 } from '../utils/page';
-import { type PopoverVisibility, hidePopover } from '../utils/popovers';
 import { addHorizontalSwipeHandler } from '../utils/touch';
 import { handleWatcher, skipWatcher } from '../utils/watchers';
 import { propsDef as basePropsDef, useOrCreateBase } from './base';
@@ -105,8 +109,12 @@ export const propsDef = {
     default: () => getDefault('titlePosition') as TitlePosition,
   },
   navVisibility: {
-    type: String as PropType<PopoverVisibility>,
-    default: () => getDefault('navVisibility') as PopoverVisibility,
+    type: String as PropType<PopoverAction>,
+    default: () => getDefault('navVisibility') as PopoverAction,
+  },
+  navPopover: {
+    type: Object as PropType<Partial<PopoverOptions>>,
+    default: () => getDefault('navPopover'),
   },
   showWeeknumbers: [Boolean, String],
   showIsoWeeknumbers: [Boolean, String],
@@ -139,6 +147,8 @@ export const emitsDef = [
 ];
 
 const contextKey = Symbol('__vc_calendar_context__');
+let navPopoverUid = 0;
+let dayPopoverUid = 0;
 
 export function createCalendar(
   props: CalendarProps,
@@ -150,8 +160,8 @@ export function createCalendar(
   const focusedDay = ref<CalendarDay | null>(null);
   const focusableDay = ref(new Date().getDate());
   const inTransition = ref(false);
-  const navPopoverId = ref(Symbol());
-  const dayPopoverId = ref(Symbol());
+  const navPopoverName = ref(`__nav-popover-${navPopoverUid++}__`);
+  const dayPopoverName = ref(`__day-popover-${dayPopoverUid++}__`);
   const _view = ref(props.view);
   const _pages = ref<Page[]>([]);
   const transitionName = ref('');
@@ -196,7 +206,18 @@ export function createCalendar(
       props.maxPage || (maxDate.value ? getDateAddress(maxDate.value) : null),
   );
 
-  const navVisibility = computed(() => props.navVisibility);
+  const navPopover = computed(() => {
+    const result = {
+      teleport: null,
+      ...props.navPopover,
+      name: navPopoverName.value,
+    };
+    if (props.navVisibility) {
+      displayWarning('navVisibility');
+      result.action = props.navVisibility;
+    }
+    return result;
+  });
 
   const showWeeknumbers = computed(() => !!props.showWeeknumbers);
 
@@ -477,8 +498,9 @@ export function createCalendar(
     if (!opts.force && !canMove(target, opts)) return false;
     // Move to new `fromPage` if it's different from the current one
     if (opts.fromPage && !pageIsEqualToPage(opts.fromPage, firstPage.value)) {
-      // Hide nav popover for good measure
-      hidePopover({ id: navPopoverId.value, hideDelay: 0 });
+      // Hide popovers for good measure
+      hidePopover({ name: navPopoverName.value, hideDelay: 0 });
+      hidePopover({ name: dayPopoverName.value, hideDelay: 0 });
       // Quietly change view if needed
       if (opts.view) {
         skipWatcher('view', 10);
@@ -720,8 +742,6 @@ export function createCalendar(
     containerRef,
     focusedDay,
     inTransition,
-    navPopoverId,
-    dayPopoverId,
     view: _view,
     pages: _pages,
     transitionName,
@@ -747,7 +767,9 @@ export function createCalendar(
     isMonthly,
     isWeekly,
     isDaily,
-    navVisibility,
+    dayPopoverName,
+    navPopoverName,
+    navPopover,
     showWeeknumbers,
     showIsoWeeknumbers,
     getDateAddress,

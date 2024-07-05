@@ -42,13 +42,13 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import { useCalendar } from '../../use/calendar';
-import { Page } from '../../utils/page';
 import {
   type PopoverPlacement,
   type PopoverOptions,
-  popoverDirective as vPopover,
-} from '../../utils/popovers';
+  directive as vPopover,
+} from 'v-popover';
+import { useCalendar } from '../../use/calendar';
+import { Page } from '../../utils/page';
 import BaseIcon from '../BaseIcon/BaseIcon.vue';
 import CalendarSlot from './CalendarSlot.vue';
 
@@ -63,12 +63,12 @@ const props = defineProps<{
 }>();
 
 const {
-  navPopoverId,
-  navVisibility,
+  navPopover,
   canMovePrev,
   movePrev,
   canMoveNext,
   moveNext,
+  displayMode,
 } = useCalendar();
 
 const navPlacement = computed<PopoverPlacement>(() => {
@@ -85,12 +85,11 @@ const navPlacement = computed<PopoverPlacement>(() => {
 const navPopoverOptions = computed<Partial<PopoverOptions>>(() => {
   const { page } = props;
   return {
-    id: navPopoverId.value,
-    visibility: navVisibility.value,
+    theme: displayMode.value,
+    ...navPopover.value,
     placement: navPlacement.value,
-    flip: false,
     data: { page },
-    isInteractive: true,
+    interactive: true,
   };
 });
 
