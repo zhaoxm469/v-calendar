@@ -17,7 +17,7 @@
           <div v-if="masks.dayPopover" class="vc-day-popover-header">
             {{ dayTitle(day) }}
           </div>
-          <PopoverRow
+          <CalendarDayPopoverRow
             v-for="attribute in attributes"
             :key="attribute.key"
             :attribute="attribute"
@@ -32,7 +32,7 @@
 import { PopoverContent } from 'v-popover';
 import { useCalendar } from '../../use/calendar';
 import { CalendarDay } from '../../utils/page';
-import PopoverRow from '../Popover/PopoverRow.vue';
+import CalendarDayPopoverRow from './CalendarDayPopoverRow.vue';
 import CalendarSlot from './CalendarSlot.vue';
 
 const { dayPopoverName, displayMode, color, masks, locale } = useCalendar();
