@@ -11,7 +11,7 @@ import { ref } from 'vue';
 
 const date = ref(new Date());
 const popover = ref({
-  visibility: 'click',
+  action: 'click',
   placement: 'right',
 });
 </script>

@@ -53,6 +53,6 @@ const errorMessage = computed(() => {
   return '';
 });
 const popover = ref({
-  visibility: 'hover',
+  action: 'hover',
 });
 </script>

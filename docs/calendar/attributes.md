@@ -508,7 +508,7 @@ const todos = ref([
   {
     description: 'Take Noah to basketball practice.',
     isComplete: false,
-    dates: { repeat: { weekdays: 5 } }, // Every Friday
+    dates: { repeat: { weekdays: 6 } }, // Every Friday
     color: 'red',
   },
 ]);
@@ -531,26 +531,31 @@ const attributes = computed(() => [
 
 For this example, we simply assigned a string to the `popover.label` property. Now, the label displays in a popover whenever the user hovers over the day content (or taps on mobile).
 
-If we want to force the user to click on the day content in order to display the popover, we can set the popover's `visibility` property to `"focus"` or `"click"`.
+If we want to force the user to click on the day content in order to display the popover, we can set the popover's `action` property to `"focus"` or `"click"`.
 
-<AttributesPopoverLabels visibility="focus" />
+<BaseAlert>
+
+The `visibility` property has been deprecated as of 3.2.0. It is still supported, but should be replaced by the `action` property moving forward.
+</BaseAlert>
+
+<AttributesPopoverLabels action="focus" />
 
 ```js
     ...
     popover: {
       label: todo.description,
-      visibility: 'focus'
+      action: 'focus'
     }
     ...
 ```
 
-<AttributesPopoverLabels visibility="click" />
+<AttributesPopoverLabels action="click" />
 
 ```js
     ...
     popover: {
+      action: 'click'
       label: todo.description,
-      visibility: 'click'
     }
     ...
 ```
@@ -559,13 +564,13 @@ Also, you'll notice there is a small indicator next to the popover content row f
 
 If you would like to hide the indicator, just set the `hideIndicator` property to `true`;
 
-<AttributesPopoverLabels visibility="hover" hide-indicators />
+<AttributesPopoverLabels action="hover" hide-indicators />
 
 ```js
     ...
     popover: {
+      action: 'hover',
       label: todo.description,
-      visibility: 'hover',
       hideIndicator: true,
     }
     ...
@@ -617,7 +622,7 @@ const attributes = computed(() => [
       class: todo.isComplete ? 'opacity-75' : '',
     },
     // We need to at least pass a truthy value for the popover to appear
-    // Pass an object to customize popover settings like visibility, placement, etc.
+    // Pass an object to customize popover settings like action, placement, etc.
     popover: true,
     customData: todo,
   })),
