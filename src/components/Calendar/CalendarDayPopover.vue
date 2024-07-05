@@ -42,3 +42,17 @@ function dayTitle(day: CalendarDay) {
   return locale.value.formatDate(day.date, masks.value.dayPopover);
 }
 </script>
+
+<style>
+.vc-day-popover-container {
+  font-size: var(--vc-text-xs);
+  font-weight: var(--vc-font-medium);
+}
+
+.vc-day-popover-header {
+  font-size: var(--vc-text-xs);
+  color: var(--vc-day-popover-header-color);
+  font-weight: var(--vc-font-semibold);
+  text-align: center;
+}
+</style>
