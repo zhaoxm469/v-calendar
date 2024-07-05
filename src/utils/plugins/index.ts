@@ -5,7 +5,7 @@ import { get } from '../helpers';
 export const registerComponent = (
   instance: Application,
   component: Component,
-  defaults: Defaults = {},
+  defaults: Partial<Defaults> = {},
 ) => {
   if (component) {
     const prefix = get(defaults, 'componentPrefix', '');
