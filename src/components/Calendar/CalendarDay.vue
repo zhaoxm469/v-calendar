@@ -225,8 +225,6 @@ export default defineComponent({
           },
           ...popovers,
           {
-            action: 'hover',
-            interactive: false,
             arrowHidden: false,
             transitions: ['fade', 'scale'],
             theme: displayMode.value,
