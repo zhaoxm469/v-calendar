@@ -77,7 +77,7 @@ export default {
                         {
                             class: [
                                 'vc-weeknumber-content',
-                                `is-${this.showWeeknumbers_}`,
+                                `is-${this.showWeeknumbers_} weeknumber-${weeknumber}`,
                             ],
                             on: {
                                 click: event => {
