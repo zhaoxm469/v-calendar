@@ -1,18 +1,22 @@
 <template>
     <div class="scheduling-calendar">
+        currentWeekNum:{{ currentWeekNum }}
         <v-calendar
             class="custom-calendar"
             :masks="masks"
             ref="customCalendar"
             :attributes="attributes"
-            @update:from-page="onFormPage"
             :rows="rows"
+            :minVisibleWeek="currentWeekNum"
             :title-position="titlePosition"
             view="weekly"
             transition="none"
             disable-page-swipe
             is-expanded
         >
+            <template v-slot:header-title="{ shortMonthLabel, yearLabel }">
+                <span> {{ yearLabel }}年{{ shortMonthLabel }} </span>
+            </template>
             <template v-slot:day-content="{ day, attributes }">
                 <span class="day-label">{{ day.day }}</span>
                 <div v-for="attr in attributes" :key="attr.key">
@@ -30,7 +34,6 @@
 
 <script>
 import { formatLessons } from './format.js';
-import { getWeekOfMonth } from './utils.js';
 
 export default {
     props: {
@@ -63,43 +66,14 @@ export default {
         attributes() {
             return formatLessons(this.lessons);
         },
-    },
-    methods: {
-        onFormPage(value) {
-            this.$nextTick(() => {
-                this.setHidePastWeeks();
-            });
-        },
-        setHidePastWeeks() {
-            if (!this.hidePastWeeks) return;
-            const currentWeekNumber = getWeekOfMonth();
-            const calendarEl = this.$refs.customCalendar.$el;
-            const currentYearMonth = HT.Date.toString(new Date(), 'yyyy-MM');
-
-            for (let i = 1; i < currentWeekNumber; i++) {
-                const weekElements = calendarEl.querySelectorAll(
-                    `.in-month.week-${i}`,
-                );
-
-                weekElements.forEach(item => {
-                    // 检查元素类名中是否包含当前年月
-                    if (
-                        item.classList
-                            .toString()
-                            .includes(`id-${currentYearMonth}`)
-                    ) {
-                        item.style.display = 'none';
-                    }
-                });
-            }
+        currentWeekNum() {
+            return HT.Date.getWeekNumber('2024-08-15');
         },
     },
-    mounted() {
-        this.setHidePastWeeks();
-    },
+    methods: {},
+    mounted() {},
 };
 </script>
-
 
 <style lang="less" scoped>
 @import url('./style.less');

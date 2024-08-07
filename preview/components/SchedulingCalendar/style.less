@@ -7,36 +7,52 @@
 }
 
 /deep/ .custom-calendar.vc-container {
-    --day-border: 1px solid #ccc;
-    --day-border-highlight: 1px solid #b8c2cc;
+    --border-color: #E8ECF5;
+
+    --day-border: 1px solid var(--border-color);
+    --day-border-highlight: 1px solid var(--border-color);
     --day-width: 90px;
     --day-height: 90px;
-    --weekday-bg: #f8fafc;
-    --weekday-border: 1px solid #eaeaea;
-    border-bottom: 0;
+    --day-bg: #edf4fcb5;
+    --weekday-bg: #F9F9F9;
+    --weekday-border: 1px solid var(--border-color);
 
+    border: 1px solid var(--border-color);
     border-radius: 0;
     width: 100%;
 
+    .vc-arrow {
+        display: none;
+    }
+
+    .weeknumber-undefined {
+        display: none;
+    }
+
     & .vc-header {
-        background-color: #f1f5f8;
-        padding: 10px 0;
+        background-color: #FFFFFF;
+        padding: 0;
         padding-left: 10px;
+
+        .vc-title {
+            font-size: 14px;
+        }
     }
 
     .is-today {
-        background-color: rgb(215, 221, 250) !important;
+        background-color: #2b85e429 !important;
     }
 
     & .vc-weeks {
         padding: 0;
+        border-bottom: 1px solid var(--border-color);
 
         &>div:nth-last-of-type(-n+14) {
             // border-bottom: 0;
         }
 
-        &>div:nth-last-of-type(-n+7) {
-            display: none;
+        &>div:nth-last-of-type(-n+6) {
+            // display: none;
         }
     }
 
@@ -53,13 +69,20 @@
         padding: 0 5px 3px 5px;
         text-align: left;
         min-width: var(--day-width);
-        background-color: #efefef;
+        background-color: var(--day-bg);
         padding: 10px;
+        padding-top: 4px;
         min-height: 80px;
+
+        .day-label {
+            font-weight: bold;
+            margin-bottom: 4px;
+            display: block;
+        }
 
         &.weekday-1,
         &.weekday-7 {
-            background-color: #eff8ff;
+            background-color: var(--day-bg);
         }
 
         &:not(.on-bottom) {
