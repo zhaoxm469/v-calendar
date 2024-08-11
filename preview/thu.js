@@ -282,16 +282,19 @@ HT.Date = {
     return startTime > endTime;
   },
 
-  //  getWeekNumber(new Date('2023-12-31')); // 输出 2023年12月31日的周数
-  getWeekNumber(date) {
-    const currentDate = new Date(date);
-    const startOfYear = new Date(currentDate.getFullYear(), 0, 1);
-    const startDay = startOfYear.getDay();
-    const daysPassed = Math.floor(
-      (currentDate - startOfYear) / (24 * 60 * 60 * 1000),
-    );
-    const weekNumber = Math.ceil((daysPassed + startDay + 1) / 7);
-    return weekNumber;
+  getWeekOfYear(date = new Date()) {
+    // 创建一个新的Date对象，设置为给定日期的1月1日
+    const startOfYear = new Date(date.getFullYear(), 0, 1);
+
+    // 计算给定日期距离年初有多少毫秒
+    const milliseconds = date - startOfYear;
+
+    // 将毫秒转换为天数
+    const days = milliseconds / 86400000;
+
+    // 计算周数并向上取整
+    // 加上 (startOfYear.getDay() + 6) % 7 是为了处理年初不是周日的情况
+    return Math.ceil((days + ((startOfYear.getDay() + 6) % 7)) / 7);
   },
 };
 

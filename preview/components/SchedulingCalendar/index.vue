@@ -49,11 +49,6 @@ export default {
             type: Number,
             default: 1,
         },
-        // 隐藏当前月份中，在当前周之前的所有周。
-        hidePastWeeks: {
-            type: Boolean,
-            default: false,
-        },
     },
     data() {
         return {
@@ -67,7 +62,7 @@ export default {
             return formatLessons(this.lessons);
         },
         currentWeekNum() {
-            return HT.Date.getWeekNumber('2024-08-15');
+            return HT.Date.getWeekOfYear(new Date());
         },
     },
     methods: {},

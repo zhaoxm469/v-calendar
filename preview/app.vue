@@ -1,29 +1,10 @@
 <template>
     <div style="padding: 40px 200px; background: #fff; overflow: auto">
-        <!-- <div>
-            <SchedulingCalendar :lessons="lessons">
-                <template #lessonItem="{ item }">
-                    <LessonItem :lessonItem="item" />
-                </template>
-            </SchedulingCalendar>
-        </div>
-        <div>
-            <SchedulingCalendar :lessons="lessons" :rows="2">
-                <template #lessonItem="{ item }">
-                    <LessonItem :lessonItem="item" />
-                </template>
-            </SchedulingCalendar>
-        </div> -->
-
         <div>
             <h1 style="text-align: center; margin: 40px 0">
                 <!-- 隐藏当前月份中，在当前周之前的所有周。 -->
             </h1>
-            <SchedulingCalendar
-                :lessons="lessons"
-                :rows="2"
-                :hidePastWeeks="true"
-            >
+            <SchedulingCalendar :lessons="lessons" :rows="2">
                 <template #lessonItem="{ item }">
                     <LessonItem :lessonItem="item" />
                 </template>
