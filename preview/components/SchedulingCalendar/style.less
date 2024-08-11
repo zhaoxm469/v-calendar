@@ -74,6 +74,17 @@
         padding-top: 4px;
         min-height: 80px;
 
+        &.is-past-date {
+            background-color: #f0f0f0 !important;
+            background-image:
+                repeating-linear-gradient(135deg,
+                    rgba(0, 0, 0, 0.1) 0px,
+                    rgba(0, 0, 0, 0.1) 1px,
+                    transparent 1px,
+                    transparent 10px);
+            background-size: 14.14px 14.14px;
+        }
+
         .day-label {
             font-weight: bold;
             margin-bottom: 4px;

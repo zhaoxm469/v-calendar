@@ -944,6 +944,7 @@ export default class Locale {
             `week-from-end-${weekFromEnd}`,
             {
               'is-today': isToday,
+              'is-past-date': range.end < today,
               'is-first-day': isFirstDay,
               'is-last-day': isLastDay,
               'in-month': thisMonth,
